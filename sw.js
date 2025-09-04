@@ -7,6 +7,7 @@ const ASSETS = [
   './assets/app.js',
   './assets/data.js',
   './assets/logo.png',
+  './assets/favicon.ico',
 ];
 
 // Helpers

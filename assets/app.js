@@ -117,6 +117,15 @@ if (state.settings.theme === 'light' || (!state.settings.theme && prefersLight))
   document.documentElement.classList.add('light');
 }
 
+function applySettings(){
+  // Apply reduced motion setting
+  if (state.settings.reduceMotion) {
+    document.body.style.scrollBehavior = 'auto';
+  } else {
+    document.body.style.scrollBehavior = '';
+  }
+}
+
 // UI Bindings
 $('#themeToggle').addEventListener('click',()=>{
   document.documentElement.classList.toggle('light');
@@ -124,11 +133,23 @@ $('#themeToggle').addEventListener('click',()=>{
   saveSettings(state.settings);
 });
 
-$('#settingsBtn').addEventListener('click',()=> $('#settingsDialog').showModal());
+$('#settingsBtn').addEventListener('click',()=>{
+  const dlg = $('#settingsDialog');
+  if (dlg && typeof dlg.showModal === 'function') dlg.showModal();
+  else if (dlg) dlg.setAttribute('open', 'open');
+});
 $('#spaceToCount').checked = !!state.settings.spaceToCount;
 $('#reduceMotion').checked = !!state.settings.reduceMotion;
 $('#spaceToCount').addEventListener('change', e=>{ state.settings.spaceToCount = e.target.checked; saveSettings(state.settings); });
-$('#reduceMotion').addEventListener('change', e=>{ state.settings.reduceMotion = e.target.checked; document.body.style.scrollBehavior = e.target.checked ? 'auto' : ''; saveSettings(state.settings); });
+$('#reduceMotion').addEventListener('change', e=>{ state.settings.reduceMotion = e.target.checked; applySettings(); saveSettings(state.settings); });
+
+// Close dialog when clicking the backdrop area
+const settingsDialog = $('#settingsDialog');
+if (settingsDialog) {
+  settingsDialog.addEventListener('click', (ev)=>{
+    if (ev.target === settingsDialog) settingsDialog.close();
+  });
+}
 
 // Tabs (render dynamically from categories)
 function renderTabs() {
@@ -329,6 +350,9 @@ renderTabs();
 
 // Initial streak render
 renderStreak();
+
+// Apply persisted settings on load
+applySettings();
 
 // Auto-reset at local midnight even if the app stays open
 function scheduleMidnightReset(){
