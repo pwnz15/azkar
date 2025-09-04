@@ -89,6 +89,7 @@
   .card.done .progress .bar{background:linear-gradient(90deg,var(--success),var(--primary))}
   .card.done .title::after{content:'✓';margin-inline-start:.5ch;color:var(--success)}
   .card .repeats{position:absolute;inset-inline-start:12px;inset-block-start:10px;background:rgba(0,0,0,.25);backdrop-filter:blur(6px);border:1px solid var(--border);padding:6px 10px;border-radius:999px;color:var(--muted);font-size:12px}
+  .card .cat-chip{position:absolute;inset-inline-end:12px;inset-block-start:10px;background:var(--surface);border:1px solid var(--border);padding:4px 8px;border-radius:999px;color:var(--muted);font-size:11px}
   .card .title{margin:0 0 4px;font-weight:700;font-size:18px}
   .card .text{white-space:pre-wrap;margin:0;color:var(--text);font-size:15px;line-height:1.9}
   .card .note{white-space:pre-wrap;margin:0;color:var(--muted);font-size:13px}

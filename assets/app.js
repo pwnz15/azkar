@@ -44,6 +44,27 @@ const data = Object.fromEntries(Object.entries(ADHKAR_DATA).map(([cat, items]) =
   items.map((it, i) => ({ id: `${cat}-${i+1}` , ...it }))
 ]));
 
+// Category title lookup
+const categoryTitleById = Object.fromEntries(categories.map(c => [c.id, c.title]));
+
+// Normalize Arabic text for search: remove diacritics/tatweel and unify common letters
+function normalizeArabic(s){
+  if(!s) return '';
+  return String(s)
+    .toLowerCase()
+    // remove harakat/diacritics and Qur'anic marks
+    .replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g, '')
+    // remove tatweel
+    .replace(/\u0640/g, '')
+    // unify alef forms
+    .replace(/[إأآٱ]/g, 'ا')
+    // unify yaa/maqsuura
+    .replace(/ى/g, 'ي')
+    // unify taa marbuta
+    .replace(/ة/g, 'ه')
+    .trim();
+}
+
 // Persistence
 function todayKey(){
   const d = new Date();
@@ -206,7 +227,7 @@ let searchTimer;
 $('#searchInput').addEventListener('input', (e)=>{
   clearTimeout(searchTimer);
   searchTimer = setTimeout(()=>{
-    const v = (e && e.target && typeof e.target.value === 'string') ? e.target.value.trim() : '';
+    const v = (typeof e?.target?.value === 'string') ? e.target.value.trim() : '';
     state.filter = v;
     render();
   }, 120);
@@ -237,9 +258,18 @@ function cardHTML(item){
 function render(){
   const wrap = $('#cards');
   wrap.innerHTML = '';
-  const list = data[state.tab] || [];
-  const q = state?.filter || '';
-  const filtered = q ? list.filter(x => (x.text && x.text.includes(q)) || (x.title && x.title.includes(q)) || (x.note && x.note.includes(q))) : list;
+  const qRaw = state?.filter || '';
+  const q = normalizeArabic(qRaw);
+  // When searching, search across all categories; otherwise, show current tab
+  const baseList = q
+    ? categories.flatMap(cat => (data[cat.id] || []).map(it => ({ ...it, _catId: cat.id })))
+    : (data[state.tab] || []).map(it => ({ ...it, _catId: state.tab }));
+  const filtered = q
+    ? baseList.filter(x => {
+        const blob = normalizeArabic(`${x.title || ''} ${x.text || ''} ${x.note || ''}`);
+        return blob.includes(q);
+      })
+    : baseList;
 
   filtered.forEach(item => {
     const tpl = $('#cardTemplate').content.cloneNode(true);
@@ -248,6 +278,14 @@ function render(){
     if (item.title) { const h = tpl.querySelector('.title'); h.textContent = item.title; h.hidden = false; h.setAttribute('aria-hidden','false'); } else { tpl.querySelector('.title').remove(); }
     tpl.querySelector('.text').textContent = item.text;
     if (item.note) { tpl.querySelector('.note').textContent = item.note; } else { tpl.querySelector('.note').remove(); }
+
+    // If this is a cross-category search, show a small category chip
+    if (q) {
+      const chip = document.createElement('div');
+      chip.className = 'cat-chip';
+      chip.textContent = categoryTitleById[item._catId] || '';
+      el.appendChild(chip);
+    }
 
     const { cnt, pct } = cardHTML(item);
     tpl.querySelector('.current').textContent = cnt;
