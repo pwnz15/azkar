@@ -114,6 +114,18 @@
     *{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;scroll-behavior:auto !important}
   }
 
+  /* Mobile-friendly options toggled via root classes */
+  :root.compact-mode .cards{gap:10px}
+  :root.compact-mode .card{padding:12px;padding-top:32px;gap:8px}
+  :root.compact-mode .card .text{font-size:14px;line-height:1.8}
+  :root.compact-mode .card .note{font-size:12px}
+
+  :root.big-buttons .btn{padding:14px 18px;border-radius:14px}
+  :root.big-buttons .card-actions{gap:10px}
+
+  :root.sticky-tabs .controls{position:sticky;top:0;z-index:50;background:linear-gradient(180deg, rgba(0,0,0,.35), transparent 32px)}
+  :root.sticky-tabs .controls .tabs{padding-top:8px}
+
   /* Mobile: horizontally scrollable tabs */
   @media (max-width: 720px){
     /* Make header responsive and avoid overlaps */

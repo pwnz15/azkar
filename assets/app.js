@@ -124,6 +124,11 @@ function applySettings(){
   } else {
     document.body.style.scrollBehavior = '';
   }
+
+  // Mobile-friendly toggles via root classes
+  document.documentElement.classList.toggle('compact-mode', !!state.settings.compactMode);
+  document.documentElement.classList.toggle('big-buttons', !!state.settings.bigButtons);
+  document.documentElement.classList.toggle('sticky-tabs', !!state.settings.stickyTabs);
 }
 
 // UI Bindings
@@ -140,8 +145,14 @@ $('#settingsBtn').addEventListener('click',()=>{
 });
 $('#spaceToCount').checked = !!state.settings.spaceToCount;
 $('#reduceMotion').checked = !!state.settings.reduceMotion;
+$('#compactMode').checked = !!state.settings.compactMode;
+$('#bigButtons').checked = !!state.settings.bigButtons;
+$('#stickyTabs').checked = !!state.settings.stickyTabs;
 $('#spaceToCount').addEventListener('change', e=>{ state.settings.spaceToCount = e.target.checked; saveSettings(state.settings); });
 $('#reduceMotion').addEventListener('change', e=>{ state.settings.reduceMotion = e.target.checked; applySettings(); saveSettings(state.settings); });
+$('#compactMode').addEventListener('change', e=>{ state.settings.compactMode = e.target.checked; applySettings(); saveSettings(state.settings); });
+$('#bigButtons').addEventListener('change', e=>{ state.settings.bigButtons = e.target.checked; applySettings(); saveSettings(state.settings); });
+$('#stickyTabs').addEventListener('change', e=>{ state.settings.stickyTabs = e.target.checked; applySettings(); saveSettings(state.settings); });
 
 // Close dialog when clicking the backdrop area
 const settingsDialog = $('#settingsDialog');
