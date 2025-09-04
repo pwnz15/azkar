@@ -61,8 +61,13 @@
   }
   .container{max-width:1100px;margin-inline:auto;padding:16px;}
   .app-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:20px}
+  .bismillah{position:absolute;left:50%;transform:translateX(-50%);font-weight:700;letter-spacing:.5px;opacity:.9;font-size: clamp(16px, 2.5vw, 22px)}
+  .app-header.container{position:relative}
   .brand{display:flex;align-items:center;gap:12px}
-  .brand .logo{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,var(--primary),var(--accent));color:white;font-weight:700;box-shadow:var(--shadow)}
+  /* Logo: larger size, no gradient/background around it */
+  .brand .logo{width:72px;height:72px;border-radius:0;display:grid;place-items:center;background:transparent;color:inherit;font-weight:700;box-shadow:none;overflow:visible}
+  .brand .logo img{width:100%;height:100%;object-fit:contain;object-position:center;display:block}
+  .brand .logo .fallback{position:absolute}
   .brand h1{margin:0;font-size: clamp(20px, 3vw, 28px);letter-spacing:.5px}
   .actions{display:flex;gap:8px}
   .streak{border:1px solid var(--border);background:var(--surface-2);color:var(--warn);padding:8px 10px;border-radius:999px;font-weight:700;min-width:52px;text-align:center}
@@ -110,6 +115,17 @@
 
   /* Mobile: horizontally scrollable tabs */
   @media (max-width: 720px){
+    /* Make header responsive and avoid overlaps */
+    .app-header{flex-wrap: wrap;gap:10px}
+    .brand{order:1}
+    .bismillah{position:static;left:auto;transform:none;order:2;width:100%;text-align:center;margin-top:4px;font-size: clamp(14px, 4.5vw, 18px);pointer-events:none}
+    .actions{order:3}
+
+    /* Slightly smaller logo on narrow screens to save space */
+    .brand .logo{width:60px;height:60px}
+    .actions .icon-btn{padding:8px 10px;border-radius:10px}
+    .streak{min-width:46px;padding:6px 8px;font-size:12px}
+
     .tabs{
       flex-wrap: nowrap;
       overflow-x: auto;
