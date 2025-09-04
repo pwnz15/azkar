@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark">
+  <title>أذكاري | Adhkar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <header class="app-header container">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">﷽</div>
+      <h1>أذكاري</h1>
+    </div>
+    <div class="actions">
+      <div id="streak" class="streak" title="سلسلة الأيام المكتملة" aria-live="polite" aria-label="سلسلة الأيام المكتملة">🔥 0</div>
+      <button id="themeToggle" class="icon-btn" title="تبديل النمط" aria-label="تبديل النمط">🌙</button>
+      <button id="settingsBtn" class="icon-btn" title="إعدادات" aria-label="إعدادات">⚙️</button>
+    </div>
+  </header>
+
+  <section class="controls container">
+    <div class="tabs" role="tablist" aria-label="الأقسام">
+      <!-- سيتم توليد أزرار الأقسام تلقائيًا عبر JavaScript بناءً على قائمة الفئات -->
+    </div>
+    <div class="search">
+      <input id="searchInput" type="search" inputmode="search" placeholder="ابحث في الأذكار..." aria-label="ابحث في الأذكار" />
+    </div>
+  </section>
+
+  <main id="content" class="container">
+    <div id="cards" class="cards" aria-live="polite"></div>
+  </main>
+
+  <template id="cardTemplate">
+    <article class="card" data-id="">
+      <div class="repeats" title="عدد التكرار" aria-label="عدد التكرار">
+        <span class="current">0</span>/<span class="target">0</span>
+      </div>
+  <div class="title" hidden aria-hidden="true">&nbsp;</div>
+      <p class="text"></p>
+      <p class="note"></p>
+      <div class="progress">
+        <div class="bar"></div>
+      </div>
+      <div class="card-actions">
+        <button class="btn primary increment" aria-label="ذكر">سبّح</button>
+        <button class="btn ghost undo" aria-label="تراجع">تراجع</button>
+        <button class="btn ghost reset" aria-label="إعادة">إعادة</button>
+      </div>
+    </article>
+  </template>
+
+  <dialog id="settingsDialog">
+    <form method="dialog" class="dialog-body">
+      <h2>إعدادات</h2>
+      <label class="row">
+        <span>تفعيل عدّاد النقر بالمسافة</span>
+        <input type="checkbox" id="spaceToCount" />
+      </label>
+      <label class="row">
+        <span>تقليل الحركة</span>
+        <input type="checkbox" id="reduceMotion" />
+      </label>
+      <menu class="dialog-actions">
+        <button class="btn" value="cancel">إغلاق</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <footer class="container app-footer">
+    <small>المحتوى باللغة العربية. يحفظ التقدم محلياً ويُصفَّر يوميًا.</small>
+  </footer>
+
+  <script type="module" src="assets/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      const isDevHost = (h) => /^(localhost|127\.|::1|10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)$/.test(h);
+      window.addEventListener('load', async () => {
+        try {
+          if (isDevHost(location.hostname)) {
+            const regs = await navigator.serviceWorker.getRegistrations();
+            await Promise.all(regs.map(r => r.unregister()));
+            if ('caches' in window) {
+              const keys = await caches.keys();
+              await Promise.all(keys.map(k => caches.delete(k)));
+            }
+            console.info('[SW] Unregistered and caches cleared on dev host');
+            return; // Do not register a SW on localhost/LAN
+          }
+          const reg = await navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' });
+          // Force an update check and reload when the new SW takes control
+          reg.update().catch(() => {});
+          let refreshing = false;
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (refreshing) return;
+            refreshing = true;
+            window.location.reload();
+          });
+        } catch {}
+      });
+    }
+  </script>
+</body>
+</html>

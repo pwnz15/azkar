@@ -1,0 +1,20 @@
+# Netlify configuration for a static, no-build site
+[build]
+  publish = "."
+
+# Ensure users always get the latest service worker
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+# Ensure HTML and assets revalidate so updates flow through without fingerprints
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
